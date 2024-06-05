@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import "./HomePage.css";
 import search_icon from "../../assets/search.png";
 import clear from "../../assets/clear.png";
@@ -10,47 +10,53 @@ import humidity from "../../assets/humidity.png";
 import wind from "../../assets/wind.png";
 const HomePage = () => {
   const [data, setData] = useState(null);
-  const [Icon, setIcon] = useState(null);
+  const [Icon, setIcon] = useState(clear);
+  const [Input, setInput] = useState("");
   let api_key = "ddaa1269a64d8f352248fe6a3bf0db94";
-  const handleChange = (e) => {
-    // console.log(e);
-    console.log(e.target.value);
-  };
+  console.log(data);
+  console.log(Input);
+
   const search = async () => {
-    const element = document.getElementsByClassName("search1");
-    if (element[0].value === "") {
+    if (Input === "") {
       return 0;
     }
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${element[0].value}&units=metric&appid=${api_key}`;
+    try {
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${Input}&units=metric&appid=${api_key}`;
 
-    let response = await fetch(url);
-    let data = await response.json();
-    setData(data);
-    console.log(data);
+      let response = await fetch(url);
+      let datas = await response.json();
+      setData(datas);
 
-    if (data.weather[0].icon === "01d" || data.weather[0].icon === "01n") {
-      setIcon(clear);
-    } else if (
-      data.weather[0].icon === "02d" ||
-      data.weather[0].icon === "02n"
-    ) {
-      setIcon(cloud);
-    } else if (
-      data.weather[0].icon === "03d" ||
-      data.weather[0].icon === "03n"
-    ) {
-      setIcon(drizzle);
-    } else if (
-      data.weather[0].icon === "10d" ||
-      data.weather[0].icon === "10n"
-    ) {
-      setIcon(rain);
-    } else if (
-      data.weather[0].icon === "13d" ||
-      data.weather[0].icon === "13n"
-    ) {
-      setIcon(snow);
+      if (data.weather[0].icon === "01d" || data.weather[0].icon === "01n") {
+        setIcon(clear);
+      } else if (
+        data.weather[0].icon === "02d" ||
+        data.weather[0].icon === "02n"
+      ) {
+        setIcon(cloud);
+      } else if (
+        data.weather[0].icon === "03d" ||
+        data.weather[0].icon === "03n"
+      ) {
+        setIcon(drizzle);
+      } else if (
+        data.weather[0].icon === "10d" ||
+        data.weather[0].icon === "10n"
+      ) {
+        setIcon(rain);
+      } else if (
+        data.weather[0].icon === "13d" ||
+        data.weather[0].icon === "13n"
+      ) {
+        setIcon(snow);
+      } else {
+        setIcon("no city found");
+      }
+    } catch (err: any) {
+      console.log(err.message);
+      // alert(err.message);
+      // window.location.replace("http://localhost:5173/");
     }
   };
   return (
@@ -58,10 +64,10 @@ const HomePage = () => {
       <div className="container">
         <div className="search">
           <input
-            onChange={(e) => handleChange(e)}
             className="search1"
             placeholder="search"
             type="text"
+            onChange={(e) => setInput(e.target.value)}
           />
           <div className="search-icon" onClick={() => search()}>
             <img src={search_icon} alt="" />
